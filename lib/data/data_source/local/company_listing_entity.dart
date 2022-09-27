@@ -1,5 +1,7 @@
 import 'package:hive/hive.dart';
 
+part 'company_listing_entity.g.dart';
+
 @HiveType(typeId: 0)
 class CompanyListingEntity {
   @HiveField(0)
