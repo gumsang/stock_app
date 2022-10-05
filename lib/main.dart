@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import 'package:stock_app/presentation/company_listings/company_listings_view_mo
 import 'package:stock_app/util/color_schemes.g.dart';
 
 import 'data/data_source/local/company_listing_entity.dart';
+import 'domain/repository/stock_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,12 +19,15 @@ void main() async {
   Hive.registerAdapter(CompanyListingEntityAdapter());
   Hive.init(appDocumentDirectory.path);
 
+  final repository = StockRepositoryImpl(StockApi(), StockDao());
+  GetIt.instance.registerSingleton<StockRepository>(repository);
+
   // Hive.init(null);
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-          create: ((context) => CompanyListingsViewModel(
-              StockRepositoryImpl(StockApi(), StockDao()))))
+        create: ((context) => CompanyListingsViewModel(repository)),
+      ),
     ],
     child: const MyApp(),
   ));
